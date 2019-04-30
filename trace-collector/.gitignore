@@ -5,3 +5,6 @@
 # Python bytecode
 __pycache__
 *.pyc
+
+# rendered playback page
+/stream.html
