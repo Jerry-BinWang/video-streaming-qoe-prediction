@@ -9,5 +9,5 @@ mkdir -p ~/.local/bin && mv chromedriver ~/.local/bin
 
 # Install Chrome
 sudo apt install -y libxss1 libappindicator1 libindicator7
-wget  -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 sudo apt install -y ./google-chrome-stable_current_amd64.deb
