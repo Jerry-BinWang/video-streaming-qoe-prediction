@@ -63,6 +63,11 @@ class ExperimentRunner:
             playback_status = driver.execute_script("return player.getPlayerState()")
             if playback_status == 0:  # if playback has finished
                 break
+            else:
+                elapsed_time = datetime.datetime.utcnow() - self.manifest["start_time"]
+                if elapsed_time.total_seconds() >= config.TIMEOUT:
+                    driver.execute_script("player.pauseVideo()")
+                    break
 
             if config.DEBUG:
                 playback_time = driver.execute_script("return player.getCurrentTime()")

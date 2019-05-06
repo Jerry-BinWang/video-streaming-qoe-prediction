@@ -9,6 +9,7 @@ MANIFEST_FILE = "manifest.yaml"
 PACKET_CAPTURE_FILE = "packets.pcap"
 PLAYBACK_ROCORD_FILE = "playback.csv"
 
+TIMEOUT = 600
 BUCKET_NAME = "video-qoe-prediction"
 
 # Short movie trailers that are available in all resolutions (144, 240, 360, 480, 720, 1080)
