@@ -6,6 +6,7 @@ import yaml
 import csv
 from selenium import webdriver
 
+from comcast import Comcast
 import config
 
 
@@ -123,6 +124,12 @@ class ResultsUploader:
 
 
 if __name__ == "__main__":
-    runner = ExperimentRunner()
-    runner.run()
-    ResultsUploader().zip_and_upload()
+    while True:
+        comcast = Comcast()
+        comcast.generate_random_network_condition()
+        tcconfig_cmd = comcast.apply()
+        runner = ExperimentRunner()
+        runner.manifest["network_hape"] = " ".join(tcconfig_cmd)
+        runner.run()
+        comcast.reset()
+        ResultsUploader().zip_and_upload()
