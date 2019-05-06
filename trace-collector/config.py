@@ -8,3 +8,5 @@ RESULTS_FOLDER = "results/"
 MANIFEST_FILE = "manifest.yaml"
 PACKET_CAPTURE_FILE = "packets.pcap"
 PLAYBACK_ROCORD_FILE = "playback.csv"
+
+BUCKET_NAME = "video-qoe-prediction"

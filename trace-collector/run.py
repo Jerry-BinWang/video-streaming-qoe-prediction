@@ -98,14 +98,20 @@ class ExperimentRunner:
 class ResultsUploader:
     @staticmethod
     def zip_and_upload():
-        import zipfile
+        import boto3
         import uuid
+        import zipfile
 
         file_name = "{}.zip".format(uuid.uuid1())
         with zipfile.ZipFile(file_name, "w", zipfile.ZIP_DEFLATED) as zipf:
             zipf.write(os.path.join(config.RESULTS_FOLDER, config.MANIFEST_FILE))
             zipf.write(os.path.join(config.RESULTS_FOLDER, config.PACKET_CAPTURE_FILE))
             zipf.write(os.path.join(config.RESULTS_FOLDER, config.PLAYBACK_ROCORD_FILE))
+
+        s3 = boto3.client("s3",
+                          aws_access_key=os.environ["AWS_ACCESS_KEY"],
+                          aws_secret_key=os.environ["AWS_SECRET_KEY"])
+        s3.upload_file(file_name, config.BUCKET_NAME, file_name)
 
 
 if __name__ == "__main__":
