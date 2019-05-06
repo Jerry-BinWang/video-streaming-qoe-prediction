@@ -5,3 +5,4 @@ This project is an effort to replicate/improve upon the results of the prior wor
 ## References
 
 1. [YouTube Player API Reference for iframe Embeds](https://developers.google.com/youtube/iframe_api_reference)
+2. [tcconfig](https://pypi.org/project/tcconfig/)

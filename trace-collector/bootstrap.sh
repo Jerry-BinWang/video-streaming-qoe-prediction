@@ -1,6 +1,6 @@
 sudo apt update
 sudo apt install -y python3-pip unzip
-pip3 install selenium boto3
+pip3 install selenium boto3 tcconfig
 
 # Download WebDriver for Chrome
 wget -q https://chromedriver.storage.googleapis.com/74.0.3729.6/chromedriver_linux64.zip
