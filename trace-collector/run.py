@@ -109,8 +109,8 @@ class ResultsUploader:
             zipf.write(os.path.join(config.RESULTS_FOLDER, config.PLAYBACK_ROCORD_FILE))
 
         s3 = boto3.client("s3",
-                          aws_access_key=os.environ["AWS_ACCESS_KEY"],
-                          aws_secret_key=os.environ["AWS_SECRET_KEY"])
+                          aws_access_key_id=os.environ["AWS_ACCESS_KEY"],
+                          aws_secret_access_key=os.environ["AWS_SECRET_KEY"])
         s3.upload_file(file_name, config.BUCKET_NAME, file_name)
 
 
