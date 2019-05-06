@@ -1,13 +1,15 @@
 import datetime
+import json
 import os
 import subprocess
-from yaml import dump
+import yaml
+import csv
 from selenium import webdriver
 
 import config
 
 
-class ExperimentRunner():
+class ExperimentRunner:
     def __init__(self):
         self.manifest = {}
 
@@ -72,11 +74,16 @@ class ExperimentRunner():
             sleep(5)  # if playback has not finished, sleep for 5 seconds and then check again
 
         self.manifest["end_time"] = datetime.datetime.utcnow()
+        self.playback_record = json.loads(driver.execute_script("return JSON.stringify(changes)"))
         driver.close()
 
     def record_results(self):
         with open(os.path.join(config.RESULTS_FOLDER, config.MANIFEST_FILE), "w") as fout:
-            dump(self.manifest, stream=fout)
+            yaml.dump(self.manifest, stream=fout, default_flow_style=False)
+
+        with open(os.path.join(config.RESULTS_FOLDER, config.PLAYBACK_ROCORD_FILE), "w") as fout:
+            writer = csv.writer(fout)
+            writer.writerows(self.playback_record)
 
     @staticmethod
     def start_packet_capture():
@@ -88,6 +95,20 @@ class ExperimentRunner():
         subprocess.check_call(["sudo", "pkill", "tcpdump"])
 
 
+class ResultsUploader:
+    @staticmethod
+    def zip_and_upload():
+        import zipfile
+        import uuid
+
+        file_name = "{}.zip".format(uuid.uuid1())
+        with zipfile.ZipFile(file_name, "w", zipfile.ZIP_DEFLATED) as zipf:
+            zipf.write(os.path.join(config.RESULTS_FOLDER, config.MANIFEST_FILE))
+            zipf.write(os.path.join(config.RESULTS_FOLDER, config.PACKET_CAPTURE_FILE))
+            zipf.write(os.path.join(config.RESULTS_FOLDER, config.PLAYBACK_ROCORD_FILE))
+
+
 if __name__ == "__main__":
     runner = ExperimentRunner()
     runner.run()
+    ResultsUploader().zip_and_upload()

@@ -29,8 +29,30 @@
         playerVars: { 
           'enablejsapi': 1, 
           'origin': null
+        },
+        events: {
+          'onStateChange': onPlayerStateOrPlaybackQualityChange,
+          'onPlaybackQualityChange': onPlayerStateOrPlaybackQualityChange
         }
       });
+    }
+
+    // 4. Save player status changes and video quality changes
+    changes = []
+
+    function onPlayerStateOrPlaybackQualityChange(event) {
+      var timestamp = new Date().toISOString();
+      var playbackTime = player.getCurrentTime();
+
+      if (typeof event.data === 'number') {
+        playerState = event.data
+        playbackQuality = player.getPlaybackQuality()
+      } else {
+        playbackQuality = event.data
+        playerState = player.getPlayerState()
+      }
+
+      changes.push([timestamp, playbackTime, playerState, playbackQuality]);
     }
   </script>
 </body>
