@@ -24,7 +24,8 @@ class ExperimentRunner:
         self.record_results()
 
     def select_video_id(self):
-        self.manifest["video_id"] = "LzD79LJPNUE"
+        import random
+        self.manifest["video_id"] = random.choice(config.VIDEO_ID_LIST)
 
     def generate_playback_file(self):
         from jinja2 import Environment, FileSystemLoader
