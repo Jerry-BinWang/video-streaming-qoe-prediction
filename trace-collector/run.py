@@ -119,6 +119,8 @@ class ResultsUploader:
                           aws_secret_access_key=os.environ["AWS_SECRET_KEY"])
         s3.upload_file(file_name, config.BUCKET_NAME, file_name)
 
+        os.remove(file_name)
+
 
 if __name__ == "__main__":
     runner = ExperimentRunner()
