@@ -2,6 +2,11 @@ sudo apt update
 sudo apt install -y python3-pip unzip
 pip3 install selenium boto3 tcconfig
 
+# Set permission for tcconfig to work properly
+sudo setcap cap_net_admin+ep /sbin/tc
+sudo setcap cap_net_raw,cap_net_admin+ep /bin/ip
+sudo setcap cap_net_raw,cap_net_admin+ep /sbin/xtables-multi
+
 # Download WebDriver for Chrome
 wget -q https://chromedriver.storage.googleapis.com/74.0.3729.6/chromedriver_linux64.zip
 unzip chromedriver_linux64.zip
