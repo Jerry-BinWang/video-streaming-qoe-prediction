@@ -1,6 +1,8 @@
 sudo apt update
 sudo apt install -y python3-pip unzip
-pip3 install selenium boto3 tcconfig
+pip3 install selenium
+pip3 install boto3
+pip3 install tcconfig
 
 # Set permission for tcconfig to work properly
 sudo setcap cap_net_admin+ep /sbin/tc
