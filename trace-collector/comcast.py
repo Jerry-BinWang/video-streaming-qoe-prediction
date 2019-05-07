@@ -9,6 +9,8 @@ class Comcast:
     BANDWIDTH_UPPER_NOUND = 10      # 10 Mbps
     LATENCY_LOWER_BOUND = 30        # 30 ms
     LATENCY_UPPER_BOUND = 1000      # 1000 ms
+    JITTER_LOWER_BOUND = 0.05       # 0.05 * latency
+    JITTER_UPPER_BOUND = 0.5        # 0.5 * latency
     LOSS_LOWER_BOUND = 0.1          # 0.1%
     LOSS_UPPER_BOUND = 10           # 10%
     CORRUPT_LOWER_BOUND = 0.1       # 0.1%
@@ -20,6 +22,7 @@ class Comcast:
         self._rng = random.Random()
         self.bandwidth = None
         self.latency = None
+        self.jitter = None
         self.loss_rate = None
         self.corrupt_rate = None
         self.reordering_rate = None
@@ -45,6 +48,9 @@ class Comcast:
             self.latency = self.beta_random_range(alpha=1, beta=3,
                                                   lower=self.LATENCY_LOWER_BOUND, upper=self.LATENCY_UPPER_BOUND)
             self.latency = int(self.latency)
+            self.jitter = self.beta_random_range(alpha=1, beta=3,
+                                                 lower=self.JITTER_LOWER_BOUND, upper=self.JITTER_UPPER_BOUND)
+            self.jitter = int(self.jitter * self.latency)
         else:
             self.latency = None
 
@@ -77,7 +83,7 @@ class Comcast:
             cmd.extend(["--rate", f"{self.bandwidth:.1f}Mbps"])
 
         if self.latency is not None:
-            cmd.extend(["--delay", f"{self.latency}ms"])
+            cmd.extend(["--delay", f"{self.latency}ms", "--delay-distro", f"{self.jitter}ms"])
 
         if self.loss_rate is not None:
             cmd.extend(["--loss", f"{self.loss_rate:.1f}%"])
