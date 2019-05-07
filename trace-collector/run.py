@@ -20,9 +20,16 @@ class ExperimentRunner:
         self.set_network_condition()
         self.prepare_results_folder()
         self.start_packet_capture()
-        self.playback()
-        self.stop_packet_capture()
-        self.record_results()
+        try:
+            self.playback()
+        except:
+            success = False
+        else:
+            success = True
+            self.record_results()
+        finally:
+            self.stop_packet_capture()
+        return success
 
     def select_video_id(self):
         import random
@@ -55,34 +62,38 @@ class ExperimentRunner:
         chrome_options.add_argument("--headless")
         driver = webdriver.Chrome(options=chrome_options)
 
-        uri = Path(config.PLAYBACK_RENDERED_FILE).absolute().as_uri()
-        driver.get(uri)
+        try:
+            uri = Path(config.PLAYBACK_RENDERED_FILE).absolute().as_uri()
+            driver.get(uri)
 
-        self.manifest["start_time"] = datetime.datetime.utcnow()
-        driver.find_element_by_id("player").click()
-        while True:
-            playback_status = driver.execute_script("return player.getPlayerState()")
-            if playback_status == 0:  # if playback has finished
-                break
-            else:
-                elapsed_time = datetime.datetime.utcnow() - self.manifest["start_time"]
-                if elapsed_time.total_seconds() >= config.TIMEOUT:
-                    driver.execute_script("player.pauseVideo()")
+            self.manifest["start_time"] = datetime.datetime.utcnow()
+            driver.find_element_by_id("player").click()
+            while True:
+                playback_status = driver.execute_script("return player.getPlayerState()")
+                if playback_status == 0:  # if playback has finished
                     break
+                else:
+                    elapsed_time = datetime.datetime.utcnow() - self.manifest["start_time"]
+                    if elapsed_time.total_seconds() >= config.TIMEOUT:
+                        driver.execute_script("player.pauseVideo()")
+                        break
 
-            if config.DEBUG:
-                playback_time = driver.execute_script("return player.getCurrentTime()")
-                playback_quality = driver.execute_script("return player.getPlaybackQuality()")
-                print("Playback time: {playback_time}, status: {playback_status}, quality: {playback_quality}"
-                      .format(playback_time=playback_time,
-                              playback_status=playback_status,
-                              playback_quality=playback_quality))
+                if config.DEBUG:
+                    playback_time = driver.execute_script("return player.getCurrentTime()")
+                    playback_quality = driver.execute_script("return player.getPlaybackQuality()")
+                    print("Playback time: {playback_time}, status: {playback_status}, quality: {playback_quality}"
+                          .format(playback_time=playback_time,
+                                  playback_status=playback_status,
+                                  playback_quality=playback_quality))
 
-            sleep(5)  # if playback has not finished, sleep for 5 seconds and then check again
+                sleep(5)  # if playback has not finished, sleep for 5 seconds and then check again
 
-        self.manifest["end_time"] = datetime.datetime.utcnow()
-        self.playback_record = json.loads(driver.execute_script("return JSON.stringify(changes)"))
-        driver.close()
+            self.manifest["end_time"] = datetime.datetime.utcnow()
+            self.playback_record = json.loads(driver.execute_script("return JSON.stringify(changes)"))
+        except:
+            raise
+        finally:
+            driver.close()
 
     def record_results(self):
         with open(os.path.join(config.RESULTS_FOLDER, config.MANIFEST_FILE), "w") as fout:
@@ -130,6 +141,7 @@ if __name__ == "__main__":
         tcconfig_cmd = comcast.apply()
         runner = ExperimentRunner()
         runner.manifest["network_hape"] = " ".join(tcconfig_cmd)
-        runner.run()
+        success = runner.run()
         comcast.reset()
-        ResultsUploader().zip_and_upload()
+        if success:
+            ResultsUploader().zip_and_upload()
