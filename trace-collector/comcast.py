@@ -69,7 +69,7 @@ class Comcast:
             self.corrupt_rate = None
 
         # random generate reordering rate
-        if self.coin_toss(true_prob=0.1):
+        if self.coin_toss(true_prob=0.1) and self.latency is not None:  # reordering must be used with latency
             self.reordering_rate = self.beta_random_range(alpha=0.7, beta=3,
                                                           lower=self.REORDERING_LOWER_BOUND,
                                                           upper=self.REORDERING_UPPER_BOUND)
